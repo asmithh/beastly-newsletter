@@ -1,0 +1,5 @@
+flask>=1.1.0
+Flask-WTF>=0.14.3
+Flask-Bootstrap4>=4.0.2
+email-validator>=1.1.0
+elasticsearch>=7.2.1
