@@ -21,14 +21,14 @@ A Form 4 U
     <div class="col-md-10 col-lg-8 mx-lg-auto mx-md-auto">
 
       <h1 class="pt-5 pb-2">this is our collective wisdom i guess</h1>
-        {%for i in range(0, length_of_thingus)}
-        <p class="pt-5"><strong>{{questions[i]['asker']}}</strong></p>
-        <p class="pt-5"><strong>{{questions[i]['question']}}</strong></p>
-            {%for j in range(0, lengths_of_answers)}
-            <p class="pt-5">{{questions[lengths_of_answers[j]]['answers']['name']}}</p>
-            <p class="pt-5">{{questions[lengths_of_answers[j]]['answers']['answer']}}</p>
-{%endfor%}
-{%endfor%}
+        {% for i in range(0, length_of_thingus) %}
+        <p class="pt-5"><strong>{{ questions[i]['asker'] }}</strong></p>
+        <p class="pt-5"><strong>{{ questions[i]['question'] }}</strong></p>
+            {% for j in range(0, lengths_of_answers[i]) %}
+            <p class="pt-5">{{ questions[i]['answers'][j]['name'] }}</p>
+            <p class="pt-5">{{ questions[i]['answers'][j]['answer'] }}</p>
+{% endfor %}
+{% endfor %}
       <p class="pt-5"><strong>there u go</strong></p>
 
     </div>

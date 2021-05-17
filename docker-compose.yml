@@ -1,5 +1,6 @@
 services:
   web:
+    container_name: web
     build: ./web
     depends_on:
       - elasticsearch
@@ -32,6 +33,19 @@ services:
       - "9300:9300"
     networks:
       - elastic
+  nginx:
+    container_name: nginx
+    restart: always
+    build: ./nginx
+    depends_on: 
+      - web
+      - elasticsearch
+    networks:
+      - elastic
+    expose:
+      - "8080"
+    ports:
+      - "80:8080"
 
 volumes:
   elasticsearch-data:
