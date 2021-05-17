@@ -11,7 +11,7 @@ from wtforms.validators import DataRequired
 
 from forms import AskQuestionsForm, AnswerQuestionsForm, SignInForm
 
-es = Elasticsearch(hosts=[{"host": "host.docker.internal"}])
+es = Elasticsearch(port=9200, hosts=[{"host": "host.docker.internal"}])
 EMAIL_INDEX = "emails"
 QUESTION_INDEX = "questions"
 NEWSLETTER_INDEX = "newsletter"
@@ -38,7 +38,7 @@ def currently():
     most_recent_ts = es.search(
         index=NEWSLETTER_INDEX,
         body={"query": {"match": {"title": "latest_newsletter"}}},
-    )["hits"]["hits"][0]["_source"]["ts"]
+    )["hits"]["hits"][0]["_source"]["timestamp"]
 
     query = {"query": {"range": {"timestamp": {"gte": most_recent_ts}}}}
     qu_res = es.search(index=QUESTION_INDEX, body=query)
@@ -155,7 +155,7 @@ def answer_questions():
     most_recent_ts = es.search(
         index=NEWSLETTER_INDEX,
         body={"query": {"match": {"title": "latest_newsletter"}}},
-    )["hits"]["hits"][0]["_source"]["ts"]
+    )["hits"]["hits"][0]["_source"]["timestamp"]
 
     query = {"query": {"range": {"timestamp": {"gte": most_recent_ts}}}}
     qu_res = es.search(index=QUESTION_INDEX, body=query)
