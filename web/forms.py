@@ -15,10 +15,13 @@ class AskQuestionsForm(FlaskForm):
     pseud = StringField('pick a pseudonuym if you want')
     submit = SubmitField('submit')
  
-class QuestionEntryForm(FlaskForm):
-    name = StringField()
 
 class AnswerQuestionsForm(FlaskForm):
-    questions = FieldList(FormField(QuestionEntryForm), min_entries=1)
-    pseud = StringField('pick a pseudonuym if you want')
-    submit = SubmitField('submit')
+    def __init__(self, questions):
+        super().__init__()
+        self.questions = []
+        for qu in questions:
+            n = StringField(qu['name'])
+            self.questions.append(n)
+        self.pseud = StringField('pick a pseudonuym if you want')
+        self.submit = SubmitField('submit')
