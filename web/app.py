@@ -143,7 +143,7 @@ def answer_questions():
 
 
     if form.validate_on_submit():
-        answers = form.question_list.data
+        answers = form.questions.data
         for ans, qu in zip(answers, questions):
             body = {'answers': qu['answers'] + [ans]}
             es.update(index=QUESTION_INDEX, id=qu['qu_id'], body=body) 
