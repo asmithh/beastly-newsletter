@@ -29,6 +29,26 @@ def whale():
 def oops():
 	return render_template('home.html', message=request.args.get('message'))
 
+@app.route('/currently')
+def currently():
+    
+    most_recent_ts = es.search(index=NEWSLETTER_INDEX, body={"query": {"match": {"title": "latest_newsletter"}}})['hits']['hits'][0]['_source']
+    return most_recent_ts
+# V
+#     most_recent_ts = es.search(index=NEWSLETTER_INDEX, body={"query": {"match": {"title": "latest_newsletter"}}})['hits']['hits'][0]['_source']['timestamp']
+# 
+#     query = {"query": {"range": {"timestamp": {"gte": most_recent_ts}}}}
+#     qu_res = es.search(index=QUESTION_INDEX, body=query)
+#     uniques = set()
+# 
+#     answers = []
+#     for qu in qu_res['hits']['hits']:
+#         if qu['id'] in uniques:
+#             continue
+#         else:
+#             answers.append(qu)
+#             uniques.add(qu['id'])
+        #return render_template(questions=questions, length_of_thingus = len(answers), lengths_of_answers = [len(b['answers']) for b in answers]) 
 @app.route('/signup', methods=('GET', 'POST'))
 def signup():
     form = SignInForm()
@@ -38,7 +58,7 @@ def signup():
         secret_code = form.secret_code.data
         msg = ''
         res = es.search(index=EMAIL_INDEX, body={'query': {'match': {'email': str(email)}}})
-        if len(res['hits']) >= 1:
+        if len(res['hits']['hits']) >= 1:
             names = res['hits']['hits'][0]['_source']['names']
             my_id = res['hits']['hits'][0]['_id']
             names_str = ' ,'.join(names)
@@ -97,7 +117,7 @@ def ask_questions():
 
 @app.route('/answer_questions', methods=('GET', 'POST'))
 def answer_questions():
-    most_recent_ts = es.search(index=NEWSLETTER_INDEX, body={"query": {"match": {"title": "latest_newsletter"}}})['hits']['hits'][0]['_source']['timestamp']
+    most_recent_ts = es.search(index=NEWSLETTER_INDEX, body={"query": {"match": {"title": "latest_newsletter"}}})['hits']['hits'][0]['_source']['ts']
 
     query = {"query": {"range": {"timestamp": {"gte": most_recent_ts}}}}
     qu_res = es.search(index=QUESTION_INDEX, body=query)
@@ -105,16 +125,16 @@ def answer_questions():
 
     questions = []
     for qu in qu_res['hits']['hits']:
-        if qu['id'] in uniques:
+        if qu['_id'] in uniques:
             continue
         else:
             questions.append(qu)
-            uniques.add(qu['id'])
+            uniques.add(qu['_id'])
 
     qus = []
     for qu in questions:
-        name = qu['asker'] + ' is pondering this question: ' + qu['question'] + ' -- what are your thoughts?'
-        qus.append({'name': name, 'answers': qu['answers'], 'qu_id': qu['id']})
+        name = qu['_source']['asker'] + ' is pondering this question: ' + qu['_source']['question'] + ' -- what are your thoughts?'
+        qus.append({'name': name, 'answers': qu['_source']['answers'], 'qu_id': qu['_id']})
     form = AnswerQuestionsForm(questions = qus)
     try:
         who_am_i = {'email': session['email'], 'user_id': session['user_id'], 'name': session['name']}

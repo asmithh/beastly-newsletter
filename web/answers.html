@@ -23,8 +23,8 @@ A Form 4 U
       <h1 class="pt-5 pb-2">this is probably a form.</h1>
 <form action="" method="post" name="answer"> 
 {% for question in form.questions %}
-    {{ questionm.hidden_tag() }}
-    {{ forms.render_field(question.name) }}
+    {{ question.hidden_tag() }}
+    {{ question.name(size=80)}}
 {% endfor %}
       <input type="submit" value="plz work"> 
       </form> 
