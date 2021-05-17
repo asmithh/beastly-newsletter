@@ -16,12 +16,16 @@ class AskQuestionsForm(FlaskForm):
     submit = SubmitField('submit')
  
 
-class AnswerQuestionsForm(FlaskForm):
-    def __init__(self, questions):
-        super().__init__()
-        self.questions = []
-        for qu in questions:
-            n = StringField(qu['name'])
-            self.questions.append(n)
-        self.pseud = StringField('pick a pseudonuym if you want')
-        self.submit = SubmitField('submit')
+def AnswerQuestionsForm(questions):
+    class AnswerQuestionsPlz(FlaskForm)
+        pass
+    idx = 0
+
+    for qu in questions:
+        setattr(AnswerQuestionsPlz, 'field_{}'.format(str(idx)), StringField(qu['name'])) 
+        idx += 1
+
+    AnswerQuestionsPlz.pseud = StringField('pick a pseudonuym if you want')
+    AnswerQuestionsPlz.submit = SubmitField('submit')
+
+    return AnswerQuestionsPlz()
