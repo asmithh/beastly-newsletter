@@ -17,7 +17,7 @@ class AskQuestionsForm(FlaskForm):
  
 
 def AnswerQuestionsForm(questions):
-    class AnswerQuestionsPlz(FlaskForm)
+    class AnswerQuestionsPlz(FlaskForm):
         pass
     idx = 0
 
