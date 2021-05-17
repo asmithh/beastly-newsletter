@@ -22,11 +22,11 @@ A Form 4 U
 
       <h1 class="pt-5 pb-2">this is our collective wisdom i guess</h1>
         {% for i in range(0, length_of_thingus) %}
-        <p class="pt-5"><strong>{{ questions[i]['asker'] }}</strong></p>
-        <p class="pt-5"><strong>{{ questions[i]['question'] }}</strong></p>
+        <p><strong>{{ questions[i]['asker'] }} wants to know:</strong></p>
+        <p><strong>{{ questions[i]['question'] }}</strong></p>
             {% for j in range(0, lengths_of_answers[i]) %}
-            <p class="pt-5">{{ questions[i]['answers'][j]['name'] }}</p>
-            <p class="pt-5">{{ questions[i]['answers'][j]['answer'] }}</p>
+            <p>{{ questions[i]['answers'][j]['answerer'] }} says: </p>
+            <p>{{ questions[i]['answers'][j]['response'] }}</p>
 {% endfor %}
 {% endfor %}
       <p class="pt-5"><strong>there u go</strong></p>

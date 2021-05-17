@@ -178,7 +178,7 @@ def answer_questions():
             + " -- what are your thoughts?"
         )
         qus.append(
-            {"name": name, "answers": qu["_source"]["answers"], "qu_id": qu["_id"]}
+            {"txt": name, "source": qu["_source"], "qu_id": qu["_id"]}
         )
 
     form, fields = AnswerQuestionsForm(questions=qus)
@@ -195,9 +195,13 @@ def answer_questions():
 
     if form.validate_on_submit():
         answers = [getattr(form, f) for f in fields]
+        answerer = form.pseud.data
         for ans, qu in zip(answers, qus):
-            body = {"doc": {"answers": qu["answers"] + [ans.data]}}
-            es.update(index=QUESTION_INDEX, id=qu["qu_id"], body=body)
+            answers = qu["source"]['answers'] + [{'response': ans.data, 'answerer': answerer}]
+            source = qu["source"]
+            source["answers"] = answers
+            es.delete(index=QUESTION_INDEX, id=qu['qu_id'])
+            es.index(index=QUESTION_INDEX, id=qu["qu_id"], body=source)
         return render_template("home.html", message="successfully sent in!!")
 
     elif flask.request.method == "POST" and not (form.validate_on_submit()):

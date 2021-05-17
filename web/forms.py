@@ -27,7 +27,7 @@ def AnswerQuestionsForm(questions):
     fields = []
     for qu in questions:
         field = "field_{}".format(str(idx))
-        setattr(AnswerQuestionsPlz, field, StringField(qu["name"]))
+        setattr(AnswerQuestionsPlz, field, StringField(qu["txt"]))
         idx += 1
         fields.append(field)
 
