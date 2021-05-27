@@ -76,8 +76,15 @@ def signup():
         email = form.email.data
         secret_code = form.secret_code.data
         msg = ""
+        qu = {
+            "bool": {
+                "should": [
+                    {"match_phrase": {"email": str(email)}}
+                ]
+            }
+        }
         res = es.search(
-            index=EMAIL_INDEX, body={"query": {"match": {"email": str(email)}}}
+            index=EMAIL_INDEX, body={"query": qu}
         )
         if len(res["hits"]["hits"]) >= 1:
             names = res["hits"]["hits"][0]["_source"]["names"]
