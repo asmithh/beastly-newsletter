@@ -50,8 +50,8 @@ def oops():
     return render_template("home.html", message=request.args.get("message"))
 
 
-@requires_auth
 @app.route("/currently")
+@requires_auth
 def currently():
 
 #     if session['is_logged_in_and_authorized'] == True:
@@ -161,8 +161,8 @@ def signup():
     return render_template("index.html", form=form)
 
 
-@requires_auth
 @app.route("/ask_questions", methods=("GET", "POST"))
+@requires_auth
 def ask_questions():
 #     if session['is_logged_in_and_authorized'] == True:
 #         pass
@@ -204,8 +204,8 @@ def ask_questions():
     return render_template("ask.html", form=form)
 
 
-@requires_auth
 @app.route("/answer_questions", methods=("GET", "POST"))
+@requires_auth
 def answer_questions():
 #     if session['is_logged_in_and_authorized'] == True:
 #         pass
