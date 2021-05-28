@@ -1,9 +1,12 @@
+import hashlib
+from functools import wraps
 import time
 import uuid
 
 from elasticsearch import Elasticsearch
 import flask
 from flask import Flask, render_template, redirect, session, url_for
+from flask import request, Response
 from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
@@ -21,6 +24,21 @@ app = Flask(__name__, template_folder="./")
 app.config["SECRET_KEY"] = "POTATOSTARCHISDELICIOUS"
 Bootstrap(app)
 
+def authenticate():
+    """Sends a 401 response that enables basic auth"""
+    return Response(
+    'Could not verify your access level for that URL.\n'
+    'You have to login with proper credentials', 401,
+    {'WWW-Authenticate': 'Basic realm="Login Required"'})
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = session.get('is_logged_in_and_authorized', 0)
+        if not auth:
+            return authenticate()
+        return f(*args, **kwargs)
+    return decorated
 
 @app.route("/")
 def whale():
@@ -32,9 +50,17 @@ def oops():
     return render_template("home.html", message=request.args.get("message"))
 
 
+@requires_auth
 @app.route("/currently")
 def currently():
 
+#     if session['is_logged_in_and_authorized'] == True:
+#         pass
+#     else:
+#         msg = (
+#                 f"hey {name}. your sign-in key is incorrect."
+#             )
+#         return redirect(url_for("oops", message=msg))
     most_recent_ts = es.search(
         index=NEWSLETTER_INDEX,
         body={"query": {"match": {"title": "latest_newsletter"}}},
@@ -75,6 +101,18 @@ def signup():
         name = form.name.data
         email = form.email.data
         secret_code = form.secret_code.data
+        secret_code = hashlib.sha256(secret_code.encode('utf-8')).hexdigest()
+        with open('secret_code_hash.txt') as f:
+            correct_hash = [line for line in f.readlines()][0].strip()
+            
+        if secret_code == correct_hash:
+            session['is_logged_in_and_authorized'] = True
+        else:
+            msg = (
+                f"hey {name}. your sign-in key is incorrect."
+            )
+            return redirect(url_for("oops", message=msg))
+
         msg = ""
         qu = {
             "bool": {
@@ -123,8 +161,17 @@ def signup():
     return render_template("index.html", form=form)
 
 
+@requires_auth
 @app.route("/ask_questions", methods=("GET", "POST"))
 def ask_questions():
+#     if session['is_logged_in_and_authorized'] == True:
+#         pass
+#     else:
+#         msg = (
+#                 f"hey {name}. your sign-in key is incorrect."
+#             )
+#         return redirect(url_for("oops", message=msg))
+
     form = AskQuestionsForm()
     try:
         who_am_i = {
@@ -157,8 +204,16 @@ def ask_questions():
     return render_template("ask.html", form=form)
 
 
+@requires_auth
 @app.route("/answer_questions", methods=("GET", "POST"))
 def answer_questions():
+#     if session['is_logged_in_and_authorized'] == True:
+#         pass
+#     else:
+#         msg = (
+#                 f"hey {name}. your sign-in key is incorrect."
+#             )
+#         return redirect(url_for("oops", message=msg))
     most_recent_ts = es.search(
         index=NEWSLETTER_INDEX,
         body={"query": {"match": {"title": "latest_newsletter"}}},
